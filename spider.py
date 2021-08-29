@@ -1,20 +1,18 @@
-import re, argparse
-from requests import *
+import re, argparse, requests
 from threading import Thread
-from urllib.parse import urljoin # import urlparse (in python2)
-
-
-# def request_url(url):
-# 	try:
-# 		return get("http://" + url)
-# 	except exceptions.ConnectionError:
-# 		pass
+from urllib.parse import urljoin
 
 def extract_link_from(url):
-	response = get(url)
 	try:
+		response = requests.get(url)
 		response = response.content.decode('utf-8')
 		return re.findall('(?:href=")(.*?)"', response)
+	except requests.exceptions.ConnectionError:
+		print("[-] Connection could NOT be established! Please check if the link is correct.")
+		exit()
+	except requests.exceptions.RequestException:
+		print("[-] Invalid URL. Are you missing 'http://' or 'https://'?")
+		exit()
 	except:
 		return []
 
